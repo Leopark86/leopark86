@@ -17,7 +17,7 @@ on:
 jobs:
   check-flight-prices:
     name: 항공권 가격 모니터링
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
 
     steps:
