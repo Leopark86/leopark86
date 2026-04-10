@@ -1,0 +1,27 @@
+# 환경변수 (토큰 등 민감정보)
+.env
+.kakao_token_cache.json
+
+# 로그
+logs/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Playwright 브라우저 캐시
+.playwright/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp

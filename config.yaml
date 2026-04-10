@@ -1,0 +1,57 @@
+# =========================================================
+# 항공권 가격 알림 설정 파일
+# Flight Price Alert Configuration
+# =========================================================
+
+routes:
+  # 출발편: 김포(GMP) → 제주(CJU) - 토요일
+  outbound:
+    from: GMP
+    to: CJU
+    day_of_week: 5        # 0=월, 1=화, 2=수, 3=목, 4=금, 5=토, 6=일
+    time_range:
+      start: "06:00"      # 검색할 출발 시간 범위 시작
+      end: "14:00"        # 검색할 출발 시간 범위 끝
+
+  # 귀환편: 제주(CJU) → 김포(GMP) - 월요일
+  inbound:
+    from: CJU
+    to: GMP
+    day_of_week: 0        # 0=월요일
+    time_range:
+      start: "18:00"      # 검색할 도착 시간 범위 시작 (도착 기준)
+      end: "23:59"        # 검색할 도착 시간 범위 끝
+
+# 가격 알림 기준 (단위: 원)
+alert:
+  max_price_each: 50000       # 편도 1인 기준 이 금액 이하이면 알림
+  max_price_round_trip: 90000 # 왕복 합산 이 금액 이하이면 알림 (우선 적용)
+
+# 검색 스케줄 설정
+schedule:
+  interval_minutes: 60    # 몇 분마다 가격 확인 (기본 60분)
+  weeks_ahead: 8          # 몇 주 앞까지 검색 (기본 8주)
+  check_start_hour: 7     # 알림 시작 시간 (예: 오전 7시부터)
+  check_end_hour: 23      # 알림 종료 시간 (예: 오후 11시까지)
+
+# 알림 설정
+notifications:
+  kakao:
+    enabled: true         # 카카오톡 알림 활성화
+  telegram:
+    enabled: false        # 텔레그램 알림 활성화 (카카오톡 대체 수단)
+
+# 스크래퍼 설정
+scraper:
+  headless: true          # 브라우저를 백그라운드로 실행 (false면 화면에 표시)
+  timeout_seconds: 60     # 페이지 로딩 타임아웃
+  retry_count: 3          # 실패 시 재시도 횟수
+  airlines:               # 검색할 항공사 (빈 목록 = 전체 검색)
+    - KE    # 대한항공
+    - OZ    # 아시아나항공
+    - 7C    # 제주항공
+    - LJ    # 진에어
+    - BX    # 에어부산
+    - TW    # 티웨이항공
+    - RS    # 에어서울
+    - ZE    # 이스타항공
