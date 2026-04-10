@@ -188,19 +188,23 @@ class PriceMonitor:
 
         return notifiers
 
-    def check_prices(self) -> None:
+    def check_prices(self, force: bool = False) -> None:
         """
         가격 확인 메인 로직 (스케줄러에서 주기적으로 호출)
 
         1. 다가오는 토요일 출발편 + 월요일 귀환편 목록 수집
         2. 가격 임계값 이하 조합 필터링
         3. 알림 전송 (중복 방지 포함)
+
+        Args:
+            force: True이면 운영시간 제한을 무시하고 강제 실행 (--once 모드)
         """
         now = datetime.now(KST)
         hour = now.hour
-        # 운영 시간 외에는 체크 생략
-        if not (self.config.schedule.check_start_hour <= hour < self.config.schedule.check_end_hour):
-            logger.debug("운영 시간 외 (%02d시) — 가격 체크 건너뜀", hour)
+        # 운영 시간 외에는 체크 생략 (force=True 이면 통과)
+        if not force and not (self.config.schedule.check_start_hour <= hour < self.config.schedule.check_end_hour):
+            logger.info("운영 시간 외 (현재 KST %02d시, 운영: %d~%d시) — 체크 건너뜀",
+                        hour, self.config.schedule.check_start_hour, self.config.schedule.check_end_hour)
             return
 
         logger.info("===== 가격 체크 시작: %s =====", now.strftime("%Y-%m-%d %H:%M:%S KST"))

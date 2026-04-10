@@ -80,8 +80,8 @@ def main() -> None:
         return
 
     if args.once:
-        print("\n[1회 체크] 가격 확인 중...")
-        monitor.check_prices()
+        print("\n[1회 체크] 가격 확인 중... (시간 제한 무시)")
+        monitor.check_prices(force=True)
         print("완료.")
         return
 

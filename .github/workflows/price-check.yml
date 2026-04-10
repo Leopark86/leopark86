@@ -40,11 +40,24 @@ jobs:
       - name: Playwright Chromium 설치
         run: playwright install chromium --with-deps
 
-      # ── 5. .env 파일 생성 (Secrets → 환경변수) ──────────────────────
-      - name: 환경변수 설정
+      # ── 5. Secrets 설정 확인 ──────────────────────────────────────────
+      - name: Secrets 설정 확인
         run: |
-          echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
-          echo "TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}" >> .env
+          if [ -z "$TELEGRAM_BOT_TOKEN" ]; then
+            echo "⚠️  TELEGRAM_BOT_TOKEN secret이 설정되지 않았습니다!"
+            echo "GitHub 레포 → Settings → Secrets and variables → Actions 에서 추가하세요."
+            exit 1
+          fi
+          if [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "⚠️  TELEGRAM_CHAT_ID secret이 설정되지 않았습니다!"
+            exit 1
+          fi
+          echo "✅ Telegram Secrets 확인 완료"
+          echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> .env
+          echo "TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID" >> .env
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       # ── 6. 가격 체크 실행 ─────────────────────────────────────────────
       - name: 항공권 가격 체크
@@ -62,7 +75,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
-      # ── 8. 로그 업로드 (실패 시 확인용) ─────────────────────────────
+      # ── 8. 로그 업로드 (항상 실행 — 실패 원인 확인용) ───────────────
       - name: 로그 업로드
         if: always()
         uses: actions/upload-artifact@v4
