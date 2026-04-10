@@ -1,0 +1,73 @@
+name: ✈ 항공권 가격 체크
+
+on:
+  # 매시간 정각 실행 (KST 07:00~23:00 = UTC 22:00~14:00)
+  schedule:
+    - cron: "0 22-23 * * *"   # KST 07:00~08:00
+    - cron: "0 0-14 * * *"    # KST 09:00~23:00
+
+  # 수동 실행 (GitHub Actions 탭 → Run workflow)
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: "테스트 알림만 전송 (true/false)"
+        required: false
+        default: "false"
+
+jobs:
+  check-flight-prices:
+    name: 항공권 가격 모니터링
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. 코드 체크아웃 ───────────────────────────────────────────────
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      # ── 2. Python 설정 ────────────────────────────────────────────────
+      - name: Python 3.11 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # ── 3. 패키지 설치 ────────────────────────────────────────────────
+      - name: 패키지 설치
+        run: pip install -r requirements.txt
+
+      # ── 4. Playwright Chromium 설치 ───────────────────────────────────
+      - name: Playwright Chromium 설치
+        run: playwright install chromium --with-deps
+
+      # ── 5. .env 파일 생성 (Secrets → 환경변수) ──────────────────────
+      - name: 환경변수 설정
+        run: |
+          echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
+          echo "TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}" >> .env
+
+      # ── 6. 가격 체크 실행 ─────────────────────────────────────────────
+      - name: 항공권 가격 체크
+        if: github.event.inputs.test_mode != 'true'
+        run: python main.py --once
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      # ── 7. 테스트 알림 전송 (수동 실행 시 test_mode=true 인 경우) ──
+      - name: 테스트 알림 전송
+        if: github.event.inputs.test_mode == 'true'
+        run: python main.py --test
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      # ── 8. 로그 업로드 (실패 시 확인용) ─────────────────────────────
+      - name: 로그 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flight-alert-log-${{ github.run_number }}
+          path: logs/
+          retention-days: 7
+          if-no-files-found: ignore

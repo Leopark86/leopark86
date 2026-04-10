@@ -37,9 +37,9 @@ schedule:
 # 알림 설정
 notifications:
   kakao:
-    enabled: true         # 카카오톡 알림 활성화
+    enabled: false        # 카카오톡 알림 활성화
   telegram:
-    enabled: false        # 텔레그램 알림 활성화 (카카오톡 대체 수단)
+    enabled: true         # 텔레그램 알림 활성화
 
 # 스크래퍼 설정
 scraper:
