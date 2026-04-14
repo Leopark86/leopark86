@@ -36,11 +36,7 @@ jobs:
       - name: 패키지 설치
         run: pip install -r requirements.txt
 
-      # ── 4. Playwright Chromium 설치 ───────────────────────────────────
-      - name: Playwright Chromium 설치
-        run: playwright install chromium --with-deps
-
-      # ── 5. Secrets 설정 확인 ──────────────────────────────────────────
+      # ── 4. Secrets 설정 확인 ──────────────────────────────────────────
       - name: Secrets 설정 확인
         run: |
           if [ -z "$TELEGRAM_BOT_TOKEN" ]; then
