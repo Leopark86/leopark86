@@ -133,17 +133,27 @@ class NaverFlightScraper:
         if not raw:
             return None
         s = str(raw).strip()
-        # "오전 6:30", "오후 2:15" 형식
-        am_pm = re.search(r"(오전|오후|AM|PM)\s*(\d{1,2}):(\d{2})", s, re.IGNORECASE)
-        if am_pm:
-            period, h, mi = am_pm.group(1), int(am_pm.group(2)), int(am_pm.group(3))
-            if period in ("오후", "PM") and h != 12:
+        # "7:05 PM on Sat, May 16" 형식 (Google Flights 응답)
+        m = re.search(r"(\d{1,2}):(\d{2})\s*(AM|PM)", s, re.IGNORECASE)
+        if m:
+            h, mi, period = int(m.group(1)), int(m.group(2)), m.group(3).upper()
+            if period == "PM" and h != 12:
                 h += 12
-            elif period in ("오전", "AM") and h == 12:
+            elif period == "AM" and h == 12:
                 h = 0
             from datetime import time
             return time(h % 24, mi)
-        # "06:30", "14:15" 형식
+        # "오전 6:30", "오후 2:15" 형식
+        m = re.search(r"(오전|오후)\s*(\d{1,2}):(\d{2})", s)
+        if m:
+            period, h, mi = m.group(1), int(m.group(2)), int(m.group(3))
+            if period == "오후" and h != 12:
+                h += 12
+            elif period == "오전" and h == 12:
+                h = 0
+            from datetime import time
+            return time(h % 24, mi)
+        # "06:30", "14:15" 24시간 형식
         m = re.search(r"\b(\d{1,2}):(\d{2})\b", s)
         if m:
             h, mi = int(m.group(1)), int(m.group(2))
