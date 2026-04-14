@@ -55,7 +55,7 @@ class NaverFlightScraper:
         return []
 
     def _fetch(self, route: RouteConfig, date: datetime) -> List[Flight]:
-        from fast_flights import FlightData, Passengers, create_filter, get_flights
+        from fast_flights import FlightData, Passengers, create_filter, get_flights_from_filter
 
         date_str = date.strftime("%Y-%m-%d")
 
@@ -70,7 +70,7 @@ class NaverFlightScraper:
             passengers=Passengers(adults=1),
         )
 
-        result = get_flights(f, currency="KRW")
+        result = get_flights_from_filter(f, currency="KRW")
         flights = []
 
         for flight in result.flights:
