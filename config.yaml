@@ -11,7 +11,7 @@ routes:
     day_of_week: 5        # 0=월, 1=화, 2=수, 3=목, 4=금, 5=토, 6=일
     time_range:
       start: "10:00"      # 검색할 출발 시간 범위 시작
-      end: "14:00"        # 검색할 출발 시간 범위 끝
+      end: "13:30"        # 검색할 출발 시간 범위 끝
 
   # 귀환편: 제주(CJU) → 김포(GMP) - 월요일
   inbound:
@@ -24,8 +24,8 @@ routes:
 
 # 가격 알림 기준 (단위: 원)
 alert:
-  max_price_each: 120000       # 편도 1인 기준 이 금액 이하이면 알림
-  max_price_round_trip: 300000 # 왕복 합산 이 금액 이하이면 알림 (우선 적용)
+  max_price_each: 80000       # 편도 1인 기준 이 금액 이하이면 알림
+  max_price_round_trip: 100000 # 왕복 합산 이 금액 이하이면 알림 (우선 적용)
 
 # 검색 스케줄 설정
 schedule:
